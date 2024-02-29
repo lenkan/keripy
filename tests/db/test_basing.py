@@ -11,7 +11,7 @@ import lmdb
 import pytest
 from hio.base import doing
 
-from tests.app import openMultiSig
+from tests.app import openMultiSig, create_group_triple
 from keri.kering import Versionage
 from keri.app import habbing
 from keri.core import coring, eventing, serdering
@@ -2328,8 +2328,38 @@ def test_group_members():
         assert ghab3.mhab.pre in keys
 
 
-    """End Test"""
+def test_signing_member():
+    prefix="group"
+    salt=b'0123456789abcdef'
+    temp=True
+    with (habbing.openHab(name=f"{prefix}_1", salt=salt, transferable=True, temp=temp) as (hby1, hab1),
+          habbing.openHab(name=f"{prefix}_2", salt=salt, transferable=True, temp=temp) as (hby2, hab2),
+          habbing.openHab(name=f"{prefix}_3", salt=salt, transferable=True, temp=temp) as (hby3, hab3)):
+        # Keverys so we can process each other's inception messages.
 
+        inits1 = dict(
+            toad=0,
+            wits=[],
+            isith='3',
+            nsith='3'
+        )
+        inits2 = dict(
+            toad=0,
+            wits=[],
+            isith=["1/2", "1/2", "1/2"],
+            nsith=["1/2", "1/2", "1/2"],
+        )
+
+        members = [(hby1, hab1), (hby2, hab2), (hby3, hab3)]
+        [(_, ghab1), (_, _), (_, _)] = create_group_triple(members, inits1, prefix)
+        [(_, ghab2), (_, _), (_, _)] = create_group_triple(members, inits2, prefix)
+
+        keys = hby1.db.signingMembers(pre=ghab1.pre)
+        assert len(keys) == 3
+        assert ghab1.mhab.pre in keys
+
+
+    """End Test"""
 
 if __name__ == "__main__":
     test_baser()
