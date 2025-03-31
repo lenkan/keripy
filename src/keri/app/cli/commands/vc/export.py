@@ -21,8 +21,7 @@ parser = argparse.ArgumentParser(description='List credentials and check mailbox
 parser.set_defaults(handler=lambda args: export_credentials(args),
                     transferable=True)
 parser.add_argument('--name', '-n', help='keystore name and file location of KERI keystore', required=True)
-parser.add_argument('--alias', '-a', help='human readable alias for the identifier to whom the credential was issued',
-                    required=True)
+parser.add_argument('--alias', '-a', help='UNUSED - kept for backwards compatibility', default=None)
 parser.add_argument('--base', '-b', help='additional optional prefix to file location of KERI keystore',
                     required=False, default="")
 parser.add_argument('--passcode', '-p', help='21 character encryption passcode for keystore (is not saved)',
@@ -63,7 +62,7 @@ def export_credentials(args):
 
 class ExportDoer(doing.DoDoer):
 
-    def __init__(self, name, alias, base, bran, said, tels, kels, chains, files):
+    def __init__(self, name, base, bran, said, tels, kels, chains, files):
         self.said = said
         self.tels = tels
         self.kels = kels
@@ -71,7 +70,6 @@ class ExportDoer(doing.DoDoer):
         self.files = files
 
         self.hby = existing.setupHby(name=name, base=base, bran=bran)
-        self.hab = self.hby.habByName(alias)
         self.rgy = credentialing.Regery(hby=self.hby, name=name, base=base)
 
         doers = [doing.doify(self.exportDo)]
