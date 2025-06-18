@@ -3,12 +3,23 @@ set -e
 
 source "$(dirname "$0")/script-utils.sh"
 
+kli() {
+  if [ ! -f .venv/bin/kli ]; then
+    python3.13 -m venv .venv
+    .venv/bin/pip install -r requirements.txt
+  fi
+
+  source .venv/bin/activate
+  .venv/bin/kli "$@"
+}
+
 kli_1() {
   if [ ! -f .venv_1/bin/kli ]; then
     python3.12 -m venv .venv_1
     .venv_1/bin/pip install keri==1.1.32
   fi
 
+  source .venv_1/bin/activate
   .venv_1/bin/kli "$@"
 }
 
